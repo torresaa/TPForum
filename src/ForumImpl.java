@@ -33,7 +33,7 @@ final public class ForumImpl extends UnicastRemoteObject implements Forum {
  */
   public synchronized HashMap enter (Intervenant intervenant, String prenom, String nom)throws RemoteException{	
         System.out.println('[Forum Impl] enter ');
-        //did7777
+        //did888
         // OUI on est là
   	// TO DO
   	return null; // CETTE LIGNE EST A CHANGER
