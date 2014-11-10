@@ -43,7 +43,7 @@ final public class ForumImpl extends UnicastRemoteObject implements Forum {
  * appel�e par le traitant de communication du programme client (IntervenantImpl) 
  * @param id identification de l'intervenant retourne lors de l'appel � la methode enter.
  */
-  public synchronized void leave(int id) throws RemoteException;{
+  public synchronized void leave(int id) throws RemoteException{
 	// TO DO
 		
   }
