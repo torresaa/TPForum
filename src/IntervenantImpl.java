@@ -67,19 +67,10 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
         } catch (Exception e) {
         }
         System.out.println("[Intervenant Impl] Port ready \n");
-      
-        System.setSecurityManager(null);
-        
-        Intervenant intervenant = new Intervenant();
-        Naming.rebind(CLIENT_NAME, intervenant);
-        
-        System.out.println("[Intervenant Impl] Waiting remote connections... \n");
-        
-        System.out.println("Intervenant: " + intervenant);
+        //TODO
         //Inet4Address ip = InetAddress.getLocalHost();
 //        Intervenant ref = (Intervenant) Naming.lookup("//" + ip.getHostAddress() + ":" +
 //                args[1] + "/" + ServerItf.SIGNATURE_STR);
-        this.descriptor(intervenant, prenom, nom);
     }
 
     /**
