@@ -6,22 +6,22 @@ import java.rmi.server.*;
 
 
 /**
- * Cette classe défini le traitant de communication du programme client.
- * Elle est utilisée par les classes connectListener,writeListener,whoListener,leaveListener 
+ * Cette classe dï¿½fini le traitant de communication du programme client.
+ * Elle est utilisï¿½e par les classes connectListener,writeListener,whoListener,leaveListener 
  * du GUI pour effectuer les communications distante avec le forum.
 */
-public class IntervenantImpl  //TO DO {
+public class IntervenantImpl  implements Intervenant{
  
   private static IrcGui gui;
   
   /**
-  * Référence distante vers un forum.
+  * Rï¿½fï¿½rence distante vers un forum.
   */
   private static Forum forum=null; //ref vers forum   
   
   /**
- * Identification du client dans le forum. Cet identifiant est retourné 
- * lors de l'appel à la méthode enter sur le forum distant.
+ * Identification du client dans le forum. Cet identifiant est retournï¿½ 
+ * lors de l'appel ï¿½ la mï¿½thode enter sur le forum distant.
  */
   private int id;
   
@@ -35,7 +35,11 @@ public class IntervenantImpl  //TO DO {
   private String prenom;
   
   /**
- * constructeur de la classe IntervenantImpl. Le nom et le prenom de l'intervenant sont passés
+ * id de l'intervenant lors de son inscription Ã  un forum
+ */
+  
+  /**
+ * constructeur de la classe IntervenantImpl. Le nom et le prenom de l'intervenant sont passï¿½s
  * en parametre du programme client (irc.java)
  * @param nom nom de l'intervenant
  * @param prenom prenom de l'intervenant
@@ -44,12 +48,13 @@ public class IntervenantImpl  //TO DO {
   	super();
   	this.nom = nom;
   	this.prenom = prenom;
+        
   }
   
  
     
   /**
- * Fixe une reference directe vers le gui (IrcGui). Cette reference est utilisée 
+ * Fixe une reference directe vers le gui (IrcGui). Cette reference est utilisï¿½e 
  * par le traitant de communication pour imprimer des message de chat dans le gui 
  * via la methode print definie dans IrcGui.
  * @param gui le GUI
@@ -59,23 +64,25 @@ public class IntervenantImpl  //TO DO {
   }
   
   /**
- * Execute la methode enter sur le forum. Cette methode est appelé par le traitant 
- * writeListener défini dans IrcGui. Cette méthode doit utiliser un serveur de nom 
- * pour obtenir une référence distante vers le forum et exécuter la méthode enter 
+ * Execute la methode enter sur le forum. Cette methode est appelï¿½ par le traitant 
+ * writeListener dï¿½fini dans IrcGui. Cette mï¿½thode doit utiliser un serveur de nom 
+ * pour obtenir une rï¿½fï¿½rence distante vers le forum et exï¿½cuter la mï¿½thode enter 
  * dessus.
  * @param forum_name nom du forum 
  */
   public void enter (String forum_name) throws Exception {
-  	
+      
   	// TO DO
+      this.forum = new ForumImpl();
+      this.id = forum.enter(this, this.prenom, this.nom);
   }
 	
   
   /**
- * Execute la methode say sur le forum. Cette methode est appelé par le traitant 
- * writeListener défini dans IrcGui. Cette méthode doit utilise une référence distante 
- * vers le forum et exécuter la méthode say dessus.
- * @param msg message à envoyer aux intervenants enregistrer dans le forum. 
+ * Execute la methode say sur le forum. Cette methode est appelï¿½ par le traitant 
+ * writeListener dï¿½fini dans IrcGui. Cette mï¿½thode doit utilise une rï¿½fï¿½rence distante 
+ * vers le forum et exï¿½cuter la mï¿½thode say dessus.
+ * @param msg message ï¿½ envoyer aux intervenants enregistrer dans le forum. 
  */
   public void say (String msg) throws Exception {
   	
@@ -84,10 +91,10 @@ public class IntervenantImpl  //TO DO {
   }
   
   /**
- * Cette methode est appelé par le forum pour imprimer un nouveau message de 
- * chat a l'intervenant. Cette impression est déléguée à la méthode print définie 
+ * Cette methode est appelï¿½ par le forum pour imprimer un nouveau message de 
+ * chat a l'intervenant. Cette impression est dï¿½lï¿½guï¿½e ï¿½ la mï¿½thode print dï¿½finie 
  * dans IrcGui. 
- * @param msg nouveau message à imprimer dans le gui.
+ * @param msg nouveau message ï¿½ imprimer dans le gui.
  */
   public void listen (String msg) throws PreconditionException {
   	// TO DO
@@ -104,18 +111,20 @@ public class IntervenantImpl  //TO DO {
   } 
 
   /**
- * Execute la methode leave sur le forum. Cette methode est appelé par le traitant 
- * leaveListener défini dans IrcGui. Cette méthode doit utilise une référence distante 
- * vers le forum et exécuter la méthode leave dessus.
+ * Execute la methode leave sur le forum. Cette methode est appelï¿½ par le traitant 
+ * leaveListener dï¿½fini dans IrcGui. Cette mï¿½thode doit utilise une rï¿½fï¿½rence distante 
+ * vers le forum et exï¿½cuter la mï¿½thode leave dessus.
  */
   public void leave() throws Exception {
 	// TO DO
+      this.forum.leave(this.id);
+      this.id = -1;  // Sera bien de dire -1 car dans les forums on a ids toujour positif
   }
   
   /**
- * Execute la methode who sur le forum. Cette methode est appelé par le traitant 
- * whoListener défini dans IrcGui. Cette méthode doit utilise une référence distante 
- * vers le forum et exécuter la methode who dessus.
+ * Execute la methode who sur le forum. Cette methode est appelï¿½ par le traitant 
+ * whoListener dï¿½fini dans IrcGui. Cette mï¿½thode doit utilise une rï¿½fï¿½rence distante 
+ * vers le forum et exï¿½cuter la methode who dessus.
  */
   public String who() throws Exception {
 	// TO DO

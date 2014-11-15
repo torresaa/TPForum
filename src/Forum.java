@@ -11,7 +11,7 @@ public interface Forum extends Remote {
  * @return un identifiant interne representant l'intervenant 
  * dans la structure de m�moristion des intervenants
  */
-  public  HashMap enter (Intervenant intervenant, String prenom, String nom)throws RemoteException;
+  public  int enter (Intervenant intervenant, String prenom, String nom)throws RemoteException;
   
    /**
  * De-enregistre un intervanant dans la structure de m�moristion des intervenants. Cette m�thode est

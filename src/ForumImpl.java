@@ -31,11 +31,12 @@ final public class ForumImpl extends UnicastRemoteObject implements Forum {
  * @return un identifiant interne representant l'intervenant 
  * dans la structure de m�moristion des intervenants
  */
-  public synchronized HashMap enter (Intervenant intervenant, String prenom, String nom)throws RemoteException{	
+  public synchronized int enter (Intervenant intervenant, String prenom, String nom)throws RemoteException{	
         System.out.println("enter");
         IntervenantDescriptor nouveauMembre= new IntervenantDescriptor(intervenant,nom, prenom);
         this.intervenants.put(this.id, nouveauMembre);
         this.id = this.id + 1;
+        return id - 1;
         
   }
   
