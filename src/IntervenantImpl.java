@@ -34,7 +34,8 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
  */
   private String prenom;
   
-  /**
+ /**
+ * id de l'intervenant lors de son inscription à un forum
  * constructeur de la classe IntervenantImpl. Le nom et le prenom de l'intervenant sont pass�s
  * en parametre du programme client (irc.java)
  * @param nom nom de l'intervenant
@@ -44,6 +45,7 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
   	super();
   	this.nom = nom;
   	this.prenom = prenom;
+        
   }
   
  
@@ -66,8 +68,10 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
  * @param forum_name nom du forum 
  */
   public void enter (String forum_name) throws Exception {
-  	
+      
   	// TO DO
+      this.forum = new ForumImpl();
+      //this.id = forum.enter(this, this.prenom, this.nom);
   }
 	
   
@@ -107,10 +111,11 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
  * Execute la methode leave sur le forum. Cette methode est appel� par le traitant 
  * leaveListener d�fini dans IrcGui. Cette m�thode doit utilise une r�f�rence distante 
  * vers le forum et ex�cuter la m�thode leave dessus.
- * @throws java.lang.Exception
  */
   public void leave() throws Exception {
 	// TO DO
+      this.forum.leave(this.id);
+      this.id = -1;  // Sera bien de dire -1 car dans les forums on a ids toujour positif
   }
   
   /**
