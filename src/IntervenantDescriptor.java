@@ -4,7 +4,7 @@ import java.io.*;
 import java.rmi.*;
 import java.rmi.server.*;
 /**
- * classe représentant l'objet servant du forum 
+ * classe reprï¿½sentant l'objet servant du forum 
  */
 public  class IntervenantDescriptor {
 	/**
@@ -16,7 +16,7 @@ public  class IntervenantDescriptor {
 	*/
 	public String nom;
 	/**
-	* l'objet représentant l'intervenant
+	* l'objet reprï¿½sentant l'intervenant
 	*/
 	public Intervenant intervenant;
 	/**
@@ -35,7 +35,7 @@ public  class IntervenantDescriptor {
 	}
 	
 	/**
- 	* test l'égalité entre deux intervenants. deux intervenant sont égaux 
+ 	* test l'ï¿½galitï¿½ entre deux intervenants. deux intervenant sont ï¿½gaux 
  	* si leur nom et prenom sont identiques.
  	*/
 	public boolean equals(java.lang.Object anObject){
@@ -45,6 +45,11 @@ public  class IntervenantDescriptor {
 		}
 		return false;
 	}
+        
+        @Override
+        public String toString(){
+            return this.nom + " " + this.prenom; 
+        }
  
 }
 

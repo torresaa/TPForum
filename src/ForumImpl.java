@@ -49,18 +49,36 @@ final public class ForumImpl extends UnicastRemoteObject implements Forum {
      * methode enter.
      */
     public synchronized void leave(int id) throws RemoteException {
-	IntervenantDescriptor AncienIntervenant = (IntervenantDescriptor) this.intervenants.remove(id);
-        System.out.println("Suppression de l'intervenant:" + AncienIntervenant);
+	this.intervenants.remove(id);
+        System.out.println("Suppression de l'intervenant:" + id);
     }
 
     @Override
     public void say(String msg) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Iterator it = intervenants.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry intervenantEntry = (Map.Entry)it.next();
+            IntervenantDescriptor client = 
+                    (IntervenantDescriptor) intervenantEntry.getValue();
+            //TODO: Posible Security Manager creation
+            client.intervenant.listen(msg);
+            it.remove();
+        }
     }
 
     @Override
     public String who() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String answer = "";
+        Iterator it = intervenants.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry intervenantEntry = (Map.Entry)it.next();
+            IntervenantDescriptor client = 
+                    (IntervenantDescriptor) intervenantEntry.getValue();
+            //TODO: Posible Security Manager creation
+            answer.concat("\n" + client.intervenant.toString());
+            it.remove();
+        }
+        return answer;
     }
        
     public synchronized void broadcastMessage(String msg, String nom) throws RemoteException {
