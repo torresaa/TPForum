@@ -1,12 +1,9 @@
 
-import java.util.*;
 import java.io.*;
-import java.rmi.*;
-import java.rmi.server.*;
 /**
  * classe repr�sentant l'objet servant du forum 
  */
-public  class IntervenantDescriptor {
+public  class IntervenantDescriptor implements Serializable{
 	/**
 	* le prenom de l'intervenant
 	*/

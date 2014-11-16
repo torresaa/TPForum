@@ -1,6 +1,5 @@
 import java.lang.*;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 
 /**
@@ -27,8 +26,8 @@ public class Irc {
         try {
             IrcGui gui = new IrcGui();
             IntervenantImpl intervenant = new IntervenantImpl(args[0], args[1]);
-            final Registry reg = LocateRegistry.createRegistry(Intervenant.PORT);
-            LocateRegistry.getRegistry(Intervenant.PORT).rebind(Intervenant.CLIENT_NAME, intervenant);
+            //final Registry reg = LocateRegistry.createRegistry(Intervenant.PORT);
+            LocateRegistry.getRegistry().rebind(Intervenant.CLIENT_NAME, intervenant);
             intervenant.setGUI(gui);
             gui.setHandler(intervenant);
         } catch (Exception e) {
@@ -38,6 +37,9 @@ public class Irc {
         }
         if (status == 0) {
             System.out.println("Client init ready...");
+        }else{
+            System.err.println("Initialization problem...");
+            System.exit(status);
         }
     }
 }

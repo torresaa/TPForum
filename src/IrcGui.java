@@ -141,9 +141,15 @@ public class IrcGui {
      * @param e l'evenement associ�
      */
 	public void actionPerformed (ActionEvent e) {
-		// TO DO !!!
-		  // connexion au forum
-		  // le nom du forum est dans irc.data.getText()
+            try {
+                irc.intervenant.enter(irc.data.getText());
+            } catch (Exception meth_e) {
+                System.err.println("Enter Event Exception:");
+                meth_e.printStackTrace(System.out);
+                irc.Print(meth_e.getMessage());
+            }
+            irc.Print("Connection ready to forum '"+irc.data.getText()+"' ");
+            irc.data.setText("");
 	}
     }  
     

@@ -59,18 +59,7 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
         super();
         this.nom = nom;
         this.prenom = prenom;
-  
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
-        //Ref vers le Forum
-//        try{
-//        IntervenantImpl.forum = (Forum) Naming.lookup("//" + FORUM_SERVER_IP +
-//                ":" + FORUM_SERVER_PORT + "/" + FORUM_SERVER_NAME);
-//        }catch(Exception e){
-//            System.err.println("Connection to server exception:");
-//            e.printStackTrace();
-//        }
+        this.intervenants = new HashMap();
         
 //        //Ref vers localhost // TODO:Review, maybe the reference need o be created in the forum
 //        InetAddress ip = InetAddress.getLocalHost();
@@ -106,11 +95,27 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * @throws java.lang.Exception
      */
     public void enter(String forum_name) throws Exception {
+        
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+        
+        //Ref vers le Forum
+        try {
+            IntervenantImpl.forum = (Forum) Naming.lookup("//" + FORUM_SERVER_IP
+                    + ":" + FORUM_SERVER_PORT + "/" + forum_name);
+        } catch (Exception e) {
+            System.err.println("Connection to server exception: ");
+            throw new Exception("Connection to forum " + forum_name + " denied");
+        }
+        
         //Intervenants initialization, forum registration
+        //TODO: Test
+        this.descriptor = new IntervenantDescriptor(this, prenom, nom);
         try{
             this.intervenants = forum.enter(this.descriptor.intervenant, prenom, nom);
         }catch( Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace(System.out);
         }
         
         //Id init
@@ -124,7 +129,6 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
                 System.out.println("Intervenant ID: "+ this.id);
                 break;
             }
-            //TODO: Posible Security Manager creation
             it.remove();
         }
         

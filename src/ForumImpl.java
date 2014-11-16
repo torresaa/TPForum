@@ -1,6 +1,5 @@
 
 import java.util.*;
-import java.io.*;
 import java.rmi.*;
 import java.rmi.server.*;
 /**
@@ -37,7 +36,8 @@ final public class ForumImpl extends UnicastRemoteObject implements Forum {
     public synchronized HashMap enter(Intervenant intervenant, String prenom, String nom) throws RemoteException {
         IntervenantDescriptor nouveauMembre= new IntervenantDescriptor(intervenant,nom, prenom);
         this.intervenants.put(this.id, nouveauMembre);
-        this.id = this.id + 1;    
+        this.id = this.id + 1;
+        System.out.println("Return hashmap");
   	return intervenants;
     }
 
