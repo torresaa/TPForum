@@ -146,6 +146,8 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
     public void say(String msg) throws Exception {
 
   		// TO DO
+    	this.forum.say(msg);
+    	this.listen(msg);
     }
 
     /**
@@ -157,6 +159,7 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      */
     public void listen(String msg) throws RemoteException {
         // TO DO
+    	this.gui.Print(msg);
     }
 
     public void addNewClient(Intervenant i) throws RemoteException {
@@ -186,6 +189,6 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
     public String who() throws Exception {
         // TO DO
     	String answString = this.forum.who();
-        return null; // CETTE LIGNE EST A CHANGER
+        return answString; // CETTE LIGNE EST A CHANGER
     }
 }
