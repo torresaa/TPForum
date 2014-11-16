@@ -46,7 +46,7 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * Ref vers les autres intervenants dans le forum
      */
     private HashMap intervenants; 
-
+     
     /**
      * id de l'intervenant lors de son inscription à un forum constructeur de la
      * classe IntervenantImpl. Le nom et le prenom de l'intervenant sont pass�s
@@ -185,6 +185,7 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      */
     public String who() throws Exception {
         // TO DO
+    	String answString = this.forum.who();
         return null; // CETTE LIGNE EST A CHANGER
     }
 }
