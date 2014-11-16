@@ -178,6 +178,13 @@ public class IrcGui {
 		// TO DO !!!
 		  // emission d'une commande say au forum via le traitant de communication
 		  // le msg est dans irc.data.getText()
+        try {
+            irc.intervenant.say(irc.data.getText());
+        } catch (Exception meth_e) {
+            System.err.println("Enter Event Exception:");
+            meth_e.printStackTrace(System.out);
+            irc.Print(meth_e.getMessage());
+        }
 	}
     }  
     
@@ -206,6 +213,13 @@ public class IrcGui {
 		
 		  // TO DO !!!
 		  // emission d'une commande who au forum via le traitant de communication	
+        try {
+            irc.intervenant.who();
+        } catch (Exception meth_e) {
+            System.err.println("Enter Event Exception:");
+            meth_e.printStackTrace(System.out);
+            irc.Print(meth_e.getMessage());
+        }		
 	}
     }
 
@@ -233,6 +247,13 @@ public class IrcGui {
 	public void actionPerformed (ActionEvent e) {
 		// TO DO !!!
 		// emission d'une commande leave au forum via le traitant de communication	
+        try {
+            irc.intervenant.leave();
+        } catch (Exception meth_e) {
+            System.err.println("Enter Event Exception:");
+            meth_e.printStackTrace(System.out);
+            irc.Print(meth_e.getMessage());
+        }		
 
 	}
     }
