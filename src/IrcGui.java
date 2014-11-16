@@ -185,6 +185,13 @@ public class IrcGui {
             irc.data.setText("");
 		  // emission d'une commande say au forum via le traitant de communication
 		  // le msg est dans irc.data.getText()
+        try {
+            irc.intervenant.say(irc.data.getText());
+        } catch (Exception meth_e) {
+            System.err.println("Enter Event Exception:");
+            meth_e.printStackTrace(System.out);
+            irc.Print(meth_e.getMessage());
+        }
 	}
     }  
     
