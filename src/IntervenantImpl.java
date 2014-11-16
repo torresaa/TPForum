@@ -1,12 +1,10 @@
 
-import java.awt.*;
-import java.awt.event.*;
 import java.lang.*;
-import java.net.Inet4Address;
 import java.rmi.*;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.server.*;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Cette classe d�fini le traitant de communication du programme client. Elle
@@ -57,20 +55,34 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * @param nom nom de l'intervenant
      * @param prenom prenom de l'intervenant
      */
-    public IntervenantImpl(String nom, String prenom) throws RemoteException {
+    public IntervenantImpl(String nom, String prenom) throws RemoteException, Exception {
         super();
         this.nom = nom;
         this.prenom = prenom;
-        
-        try {
-            LocateRegistry.createRegistry(1099);
-        } catch (Exception e) {
+  
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
         }
-        System.out.println("[Intervenant Impl] Port ready \n");
-        //TODO
-        //Inet4Address ip = InetAddress.getLocalHost();
-//        Intervenant ref = (Intervenant) Naming.lookup("//" + ip.getHostAddress() + ":" +
-//                args[1] + "/" + ServerItf.SIGNATURE_STR);
+        //Ref vers le Forum
+//        try{
+//        IntervenantImpl.forum = (Forum) Naming.lookup("//" + FORUM_SERVER_IP +
+//                ":" + FORUM_SERVER_PORT + "/" + FORUM_SERVER_NAME);
+//        }catch(Exception e){
+//            System.err.println("Connection to server exception:");
+//            e.printStackTrace();
+//        }
+        
+//        //Ref vers localhost // TODO:Review, maybe the reference need o be created in the forum
+//        InetAddress ip = InetAddress.getLocalHost();
+//        try {
+//            Intervenant local_ref = (Intervenant) Naming.lookup("//" + ip.getHostAddress() + ":"
+//                    + PORT + "/" + CLIENT_NAME);
+//            //Descriptor prope
+//            this.descriptor = new IntervenantDescriptor(local_ref, this.prenom, this.nom); 
+//        } catch (Exception e) {
+//            System.err.println("Local reference creation exception:");
+//            e.printStackTrace();
+//        }     
     }
 
     /**
@@ -91,12 +103,33 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * ex�cuter la m�thode enter dessus.
      *
      * @param forum_name nom du forum
+     * @throws java.lang.Exception
      */
     public void enter(String forum_name) throws Exception {
-        //Intervenants initialization
-        //TODO
-        this.intervenants = this.forum.enter(this.descriptor.intervenant, prenom, nom);
+        //Intervenants initialization, forum registration
+        try{
+            this.intervenants = forum.enter(this.descriptor.intervenant, prenom, nom);
+        }catch( Exception e){
+            System.out.println(e.getMessage());
+        }
         
+        //Id init
+        Iterator it = intervenants.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry intervenantEntry = (Map.Entry)it.next();
+            IntervenantDescriptor client = 
+                    (IntervenantDescriptor) intervenantEntry.getValue();
+            if (this.descriptor.equals(client)){
+                this.id = (int)intervenantEntry.getKey();
+                System.out.println("Intervenant ID: "+ this.id);
+                break;
+            }
+            //TODO: Posible Security Manager creation
+            it.remove();
+        }
+        
+        //Intervenants list refresh, tous les autres sauf moi
+        this.intervenants.remove(this.id);
     }
 
     /**

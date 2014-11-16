@@ -1,10 +1,8 @@
 // HelloServer.java
 // Copyright and License 
 
-import java.util.*;
-import java.io.*;
-import java.rmi.*;
-import java.rmi.server.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 
 /**
@@ -17,19 +15,29 @@ import java.rmi.server.*;
 public class ForumServer {
 
     
- public static void main(String args[]){
+    public static void main(String args[]) {
 
-   int status = 0;
+        int status = 0; 
 
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+        
+        try {
+            ForumImpl forum = new ForumImpl();
+            final Registry reg = LocateRegistry.createRegistry(Forum.FORUM_SERVER_PORT);
+            LocateRegistry.getRegistry(Forum.FORUM_SERVER_PORT).rebind(Forum.FORUM_SERVER_NAME,forum);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            status = 1;
+        }
+        
+        if (status == 0){
+            System.out.println("Server is ready...");
+        }else{
+            System.exit(status);
+        }
 
-   try {	
-   	// TO DO
+    }
 
-   } catch(Exception ex) {
- 		ex.printStackTrace();
- 		status = 1;
-   }
-
- }
-  
 }

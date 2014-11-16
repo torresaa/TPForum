@@ -2,6 +2,10 @@ import java.rmi.*;
 import java.util.HashMap;
 
 public interface Forum extends Remote {
+    
+    int FORUM_SERVER_PORT = 1099;
+    String FORUM_SERVER_IP = "localhost";
+    String FORUM_SERVER_NAME = "server_forum";
 	/**
  * Enregistre un intervanant dans la structure de m�moristion des intervenants. Cette m�thode est
  * appel�e par le traitant de communication du programme client (IntervenantImpl) 

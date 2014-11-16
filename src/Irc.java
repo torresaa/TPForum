@@ -1,29 +1,44 @@
-import java.awt.*;
-import java.awt.event.*;
 import java.lang.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 
 /**
 * Cette classe est la classe principale constituant le programme client.
-* Elle est composé d'une fonction main qui à pour rôle d'instancier 
-* l'interface graphique associée au client (IrcGui) ainsi qu'un objet 
-* gérant les communications avec le forum (IntervenantImpl).
+* Elle est composï¿½ d'une fonction main qui ï¿½ pour rï¿½le d'instancier 
+* l'interface graphique associï¿½e au client (IrcGui) ainsi qu'un objet 
+* gï¿½rant les communications avec le forum (IntervenantImpl).
 * 
 */
 
 public class Irc {
-         
-    public static void main(String args[]) {			
-	try{
-	
-	// TO DO !!!
-        // create the GUI
-        // instanciate the intervenant implementation
-                
-	} catch (Exception e) {
-          System.out.println("ERROR : " + e) ;
-	  e.printStackTrace(System.out);
-	  }
+
+    public static void main(String args[]) {
+        if (args.length != 2) {
+            System.err.println("usage: java Irc <NOM> <prenom>");
+            System.exit(-1);
+        }
+        int status = 0;
+
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
+        try {
+            IrcGui gui = new IrcGui();
+            IntervenantImpl intervenant = new IntervenantImpl(args[0], args[1]);
+            final Registry reg = LocateRegistry.createRegistry(Intervenant.PORT);
+            LocateRegistry.getRegistry(Intervenant.PORT).rebind(Intervenant.CLIENT_NAME, intervenant);
+            intervenant.setGUI(gui);
+            gui.setHandler(intervenant);
+        } catch (Exception e) {
+            System.out.println("ERROR : " + e);
+            e.printStackTrace(System.out);
+            status = 1;
+        }
+        if (status == 0) {
+            System.out.println("Client init ready...");
+        }
     }
 }
 

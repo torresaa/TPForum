@@ -1,23 +1,22 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.*;
-
-  
+ 
 
 /**
- * Cette classe défini l'interface graphique du programme client.
+ * Cette classe dï¿½fini l'interface graphique du programme client.
  * L'interface est mise en place par le constructeur IrcGui. 
 */
 
 public class IrcGui {
 	
     /**
-     * utilisé pour imprimer les messages de chat
+     * utilisï¿½ pour imprimer les messages de chat
      */
     public TextArea		text; 
     
     /**
-     * utilisé pour saisir les messages de chat
+     * utilisï¿½ pour saisir les messages de chat
      */
     public TextField	        data,dataconnect; 
     
@@ -32,19 +31,19 @@ public class IrcGui {
     static IntervenantImpl intervenant; 
     
     /**
-     * Indique que le client n'est pas connecté à un forum. Cette constante est utilisé 
-     * pour gérer le comportement des boutons de l'interface graphique.
+     * Indique que le client n'est pas connectï¿½ ï¿½ un forum. Cette constante est utilisï¿½ 
+     * pour gï¿½rer le comportement des boutons de l'interface graphique.
      */
     private static final int NOTCONNECTED =0;
     
     /**
-     * Indique que le client est connecté à un forum. Cette constante est utilisé 
-     * pour gérer le comportement des boutons de l'interface graphique.
+     * Indique que le client est connectï¿½ ï¿½ un forum. Cette constante est utilisï¿½ 
+     * pour gï¿½rer le comportement des boutons de l'interface graphique.
      */
     private static final int CONNECTED =1;
     
     /**
-     * Variable représentant l'état de connexion d'un client. 
+     * Variable reprï¿½sentant l'ï¿½tat de connexion d'un client. 
      */
     private int statut = NOTCONNECTED;
     
@@ -53,10 +52,10 @@ public class IrcGui {
      * les divers objets graphiques et associe au divers bouttons les classes 
      * de traitement correspondantes.
      * L'interface comporte 4 boutons :
-     *		- connect : connexion à un forum (traitant associé : connectListener)
-     *		- write	  : Emission d'un message à un forum (traitant associé : connectListener)
-     *		- who	  : liste des intervnant connecté au forum (traitant associé : WhoListener)
-     *		- leave   : quitte un forum de discussion ((traitant associé : LeaveListener))
+     *		- connect : connexion ï¿½ un forum (traitant associï¿½ : connectListener)
+     *		- write	  : Emission d'un message ï¿½ un forum (traitant associï¿½ : connectListener)
+     *		- who	  : liste des intervnant connectï¿½ au forum (traitant associï¿½ : WhoListener)
+     *		- leave   : quitte un forum de discussion ((traitant associï¿½ : LeaveListener))
      */
     public IrcGui() {
 	
@@ -97,7 +96,7 @@ public class IrcGui {
      /**
      * Fixe le traitant de communication (IntervenantImpl) utiliser par
      * le GUI pour communiquer avec le forum
-     * @param intervenant une référence directe sur le traitant de communication
+     * @param intervenant une rï¿½fï¿½rence directe sur le traitant de communication
      */
     public void setHandler(IntervenantImpl intervenant){
     	this.intervenant = intervenant;
@@ -105,10 +104,10 @@ public class IrcGui {
     
     /**
      * Affiche un message de chat dans le GUI. 
-     * Cette methode est utilisé par le traitant de communication lors de la
+     * Cette methode est utilisï¿½ par le traitant de communication lors de la
      * reception d'un message de chat en provenance du forum.Un message de chat
-     * à le format suivant : "nom.prenom >> txt....".
-     * @param msg le message de chat à afficher.  
+     * ï¿½ le format suivant : "nom.prenom >> txt....".
+     * @param msg le message de chat ï¿½ afficher.  
      */
      
     public void Print(String msg) {
@@ -129,7 +128,7 @@ public class IrcGui {
 	
     /**
      * Constructeur de ConnectListener
-     * @param IrcGui une référence directe vers l'objet gérant le GUI (IrcGui).  
+     * @param IrcGui une rï¿½fï¿½rence directe vers l'objet gï¿½rant le GUI (IrcGui).  
      */
 	public connectListener (IrcGui i) {
         	irc = i;
@@ -139,7 +138,7 @@ public class IrcGui {
      * Traite les clicks sur bouton connect. 
      * Execute la methode enter(java.lang.String forum_name) sur le traitant 
      * de communication (IntervenantImpl)
-     * @param e l'evenement associé
+     * @param e l'evenement associï¿½
      */
 	public void actionPerformed (ActionEvent e) {
 		// TO DO !!!
@@ -157,7 +156,7 @@ public class IrcGui {
 	
      /**
      * Constructeur de WriteListener
-     * @param IrcGui une référence directe vers l'objet gérant le GUI (IrcGui).  
+     * @param IrcGui une rï¿½fï¿½rence directe vers l'objet gï¿½rant le GUI (IrcGui).  
      */
 	public writeListener (IrcGui i) {
         	irc = i;
@@ -167,7 +166,7 @@ public class IrcGui {
      * Traite les clicks sur bouton connect.
      * Execute la methode say(java.lang.String msg) ) sur le traitant 
      * de communication (IntervenantImpl)
-     * @param e l'evenement associé
+     * @param e l'evenement associï¿½
      */
 	public void actionPerformed (ActionEvent e) {
 		// TO DO !!!
@@ -185,7 +184,7 @@ public class IrcGui {
 	
      /**
      * Constructeur de whoListener
-     * @param IrcGui une référence directe vers l'objet gérant le GUI (IrcGui).  
+     * @param IrcGui une rï¿½fï¿½rence directe vers l'objet gï¿½rant le GUI (IrcGui).  
      */
 	public whoListener (IrcGui i) {
         	irc = i;
@@ -195,7 +194,7 @@ public class IrcGui {
      * Traite les clicks sur bouton who.
      * Execute la methode String who() sur le traitant 
      * de communication (IntervenantImpl)
-     * @param e l'evenement associé
+     * @param e l'evenement associï¿½
      */
 	public void actionPerformed (ActionEvent e) {
 		
@@ -213,7 +212,7 @@ public class IrcGui {
 	
      /**
      * Constructeur de leaveListener
-     * @param IrcGui une référence directe vers l'objet gérant le GUI (IrcGui).  
+     * @param IrcGui une rï¿½fï¿½rence directe vers l'objet gï¿½rant le GUI (IrcGui).  
      */
 	public leaveListener (IrcGui i) {
         	irc = i;
@@ -223,7 +222,7 @@ public class IrcGui {
      * Traite les clicks sur bouton leave.
      * Execute la methode void leave()  sur le traitant 
      * de communication (IntervenantImpl)
-     * @param e l'evenement associé
+     * @param e l'evenement associï¿½
      */
 	public void actionPerformed (ActionEvent e) {
 		// TO DO !!!
