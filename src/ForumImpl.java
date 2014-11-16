@@ -55,29 +55,31 @@ final public class ForumImpl extends UnicastRemoteObject implements Forum {
 
     @Override
     public void say(String msg) throws RemoteException {
+        System.out.println("Say method, msg: "+msg);
         Iterator it = intervenants.entrySet().iterator();
         while (it.hasNext()){
             Map.Entry intervenantEntry = (Map.Entry)it.next();
             IntervenantDescriptor client = 
                     (IntervenantDescriptor) intervenantEntry.getValue();
             //TODO: Posible Security Manager creation
+            System.out.println("...Contacting client: "+client.toString());
             client.intervenant.listen(msg);
-            it.remove();
         }
     }
 
     @Override
     public String who() throws RemoteException {
-        String answer = "";
+        System.out.println("Who method");
+        String answer = "Clients in this forum: \n";
         Iterator it = intervenants.entrySet().iterator();
         while (it.hasNext()){
             Map.Entry intervenantEntry = (Map.Entry)it.next();
             IntervenantDescriptor client = 
                     (IntervenantDescriptor) intervenantEntry.getValue();
             //TODO: Posible Security Manager creation
-            answer.concat("\n" + client.intervenant.toString());
-            it.remove();
+            answer = answer.concat(client.toString()+"\n");
         }
+        System.out.println("...Return: "+answer);
         return answer;
     }
        

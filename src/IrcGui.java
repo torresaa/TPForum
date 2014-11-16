@@ -74,7 +74,7 @@ public class IrcGui {
 	Button write_button = new Button("write");
 	write_button.addActionListener(new writeListener(this));
 	frame.add(write_button);
-	
+        //write_button.setEnabled(false);	
 	
 	Button connect_button = new Button("connect");
 	connect_button.addActionListener(new connectListener(this));
@@ -83,10 +83,12 @@ public class IrcGui {
 	Button who_button = new Button("who");
 	who_button.addActionListener(new whoListener(this));
 	frame.add(who_button);
+        //who_button.setEnabled(false);
 	
 	Button leave_button = new Button("leave");
 	leave_button.addActionListener(new leaveListener(this));
 	frame.add(leave_button);
+        //leave_button.setEnabled(false);
 	
 	frame.setSize(470,300);
 	text.setBackground(Color.black); 
@@ -111,14 +113,15 @@ public class IrcGui {
      */
      
     public void Print(String msg) {
-    	try {
-    		this.text.append(msg+"\n");
-    	} catch (Exception ex) {
-			ex.printStackTrace();
-			return;
-	}	
+        try {
+            this.text.append(msg + "\n");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return;
+        }
     }
-
+    
+    
     /**
      * Classe traitant les action sur le bouton connect du GUI. 
      * 
@@ -143,12 +146,13 @@ public class IrcGui {
 	public void actionPerformed (ActionEvent e) {
             try {
                 irc.intervenant.enter(irc.data.getText());
+                irc.Print("Connection ready to forum '"+irc.data.getText()+"' ");
+                
             } catch (Exception meth_e) {
                 System.err.println("Enter Event Exception:");
                 meth_e.printStackTrace(System.out);
                 irc.Print(meth_e.getMessage());
             }
-            irc.Print("Connection ready to forum '"+irc.data.getText()+"' ");
             irc.data.setText("");
 	}
     }  
@@ -185,13 +189,6 @@ public class IrcGui {
             irc.data.setText("");
 		  // emission d'une commande say au forum via le traitant de communication
 		  // le msg est dans irc.data.getText()
-        try {
-            irc.intervenant.say(irc.data.getText());
-        } catch (Exception meth_e) {
-            System.err.println("Enter Event Exception:");
-            meth_e.printStackTrace(System.out);
-            irc.Print(meth_e.getMessage());
-        }
 	}
     }  
     
@@ -218,7 +215,8 @@ public class IrcGui {
      */
 	public void actionPerformed (ActionEvent e) {
             try {
-                irc.Print(irc.intervenant.who());
+                String msg = irc.intervenant.who();
+                irc.Print(msg);
             } catch (Exception meth_e) {
                 System.err.println("Who Event Exception:");
                 meth_e.printStackTrace(System.out);

@@ -138,7 +138,6 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
                 this.id = (int)intervenantEntry.getKey();
                 System.out.println("Intervenant ID: "+ this.id);
             }
-            it.remove();
         }
         
         //Intervenants list refresh, tous les autres sauf moi
@@ -156,9 +155,10 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
         if (this.id < 0){
             throw new Exception("You are not registred in a forum");
         }else{
-            System.out.println("Writing new message...");
+            System.out.println("Sending new message...");
+            String f_msg = this.nom.concat(" " + this.prenom + ":" + msg);
             try{
-                forum.say(msg);
+                forum.say(f_msg);
             }catch(Exception e){
                 System.out.println("No forum connection");
                 throw new Exception("No forum connection");
@@ -200,7 +200,6 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
                 del_id = (int)intervenantEntry.getKey();
                 break;
             }
-            it.remove();
         }
         Object remove = intervenants.remove(del_id);
         System.out.println("Delete client with id: "+ id_key + " " + i.toString());
