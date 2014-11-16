@@ -46,6 +46,11 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * Ref vers les autres intervenants dans le forum
      */
     private HashMap intervenants; 
+    
+    /**
+     * Counter for the local ids
+     */
+    private int id_key = 0; 
 
     /**
      * id de l'intervenant lors de son inscription à un forum constructeur de la
@@ -120,14 +125,18 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
         
         //Id init
         Iterator it = intervenants.entrySet().iterator();
+        id_key = 0;
         while (it.hasNext()){
             Map.Entry intervenantEntry = (Map.Entry)it.next();
+            
+            int key = (int)intervenantEntry.getKey();
+            if (key > id_key){id_key = key;}
+            
             IntervenantDescriptor client = 
                     (IntervenantDescriptor) intervenantEntry.getValue();
             if (this.descriptor.equals(client)){
                 this.id = (int)intervenantEntry.getKey();
                 System.out.println("Intervenant ID: "+ this.id);
-                break;
             }
             it.remove();
         }
@@ -144,8 +153,19 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * @param msg message � envoyer aux intervenants enregistrer dans le forum.
      */
     public void say(String msg) throws Exception {
-
-  		// TO DO
+        if (this.id < 0){
+            throw new Exception("You are not registred in a forum");
+        }else{
+            System.out.println("Writing new message...");
+            try{
+                forum.say(msg);
+            }catch(Exception e){
+                System.out.println("No forum connection");
+                throw new Exception("No forum connection");
+                //System.out.println("Sending message direct to users");
+                //TODO: Send message to every user.
+            } 
+        }
     }
 
     /**
@@ -156,15 +176,34 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * @param msg nouveau message � imprimer dans le gui.
      */
     public void listen(String msg) throws RemoteException {
-        // TO DO
+        System.out.println("Listen new msg...");
+        if (this.id < 0) {
+            System.out.println("...rejected message, no active forum");
+        } else {
+            IntervenantImpl.gui.Print(msg);
+        }
     }
 
-    public void addNewClient(Intervenant i) throws RemoteException {
-        // TO DO
+    public void addNewClient(IntervenantDescriptor i) throws RemoteException {
+        this.intervenants.put(id_key++, i);
+        System.out.println("Adding new client with id: "+ id_key);
     }
 
-    public void delNewClient(Intervenant i) throws RemoteException {
-        // TO DO
+    public void delNewClient(IntervenantDescriptor i) throws RemoteException {
+        Iterator it = intervenants.entrySet().iterator();
+        int del_id = 0;
+        while (it.hasNext()){
+            Map.Entry intervenantEntry = (Map.Entry)it.next();
+            IntervenantDescriptor client = 
+                    (IntervenantDescriptor) intervenantEntry.getValue();
+            if (i.equals(client)){
+                del_id = (int)intervenantEntry.getKey();
+                break;
+            }
+            it.remove();
+        }
+        Object remove = intervenants.remove(del_id);
+        System.out.println("Delete client with id: "+ id_key + " " + i.toString());
     }
 
     /**
@@ -173,9 +212,17 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * r�f�rence distante vers le forum et ex�cuter la m�thode leave dessus.
      */
     public void leave() throws Exception {
-        // TO DO
-        this.forum.leave(this.id);
+        try{
+            this.forum.leave(this.id);
+        }catch (Exception e){
+            System.err.println("No conecction to Forum.");
+            this.gui.Print("No connection to forum.");
+            //TODO:Delete command to every client
+            //TODO:Maybe return Exception
+        }
         this.id = -1;  // Sera bien de dire -1 car dans les forums on a ids toujour positif
+        this.intervenants.clear(); // No reference to other ones in the forum 
+        System.out.println("Exit of forum..");
     }
 
     /**
@@ -184,7 +231,11 @@ public class IntervenantImpl extends UnicastRemoteObject implements Intervenant 
      * r�f�rence distante vers le forum et ex�cuter la methode who dessus.
      */
     public String who() throws Exception {
-        // TO DO
-        return null; // CETTE LIGNE EST A CHANGER
+        try{
+            return IntervenantImpl.forum.who();
+        }catch(Exception e){
+            System.err.println("No conecction to Forum.");
+            throw new Exception("No connection to Forum");            
+        }
     }
 }

@@ -175,7 +175,14 @@ public class IrcGui {
      * @param e l'evenement associ�
      */
 	public void actionPerformed (ActionEvent e) {
-		// TO DO !!!
+            try {
+                irc.intervenant.say(irc.data.getText());
+            } catch (Exception meth_e) {
+                System.err.println("Say Event Exception:");
+                meth_e.printStackTrace(System.out);
+                irc.Print(meth_e.getMessage());
+            }
+            irc.data.setText("");
 		  // emission d'une commande say au forum via le traitant de communication
 		  // le msg est dans irc.data.getText()
 	}
@@ -203,10 +210,16 @@ public class IrcGui {
      * @param e l'evenement associ�
      */
 	public void actionPerformed (ActionEvent e) {
-		
-		  // TO DO !!!
-		  // emission d'une commande who au forum via le traitant de communication	
-	}
+            try {
+                irc.Print(irc.intervenant.who());
+            } catch (Exception meth_e) {
+                System.err.println("Who Event Exception:");
+                meth_e.printStackTrace(System.out);
+                irc.Print(meth_e.getMessage());
+            }
+            irc.data.setText("");
+            // emission d'une commande who au forum via le traitant de communication	
+        }
     }
 
      /**
@@ -230,11 +243,17 @@ public class IrcGui {
      * de communication (IntervenantImpl)
      * @param e l'evenement associ�
      */
-	public void actionPerformed (ActionEvent e) {
-		// TO DO !!!
-		// emission d'une commande leave au forum via le traitant de communication	
-
-	}
+        public void actionPerformed(ActionEvent e) {
+            try {
+                irc.intervenant.leave();
+            } catch (Exception meth_e) {
+                System.err.println("leave Event Exception:");
+                meth_e.printStackTrace(System.out);
+                irc.Print(meth_e.getMessage());
+            }
+            irc.data.setText("");
+            // emission d'une commande leave au forum via le traitant de communication	
+        }
     }
     
 }
