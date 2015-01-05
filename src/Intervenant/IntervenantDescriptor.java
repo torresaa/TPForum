@@ -1,9 +1,13 @@
+package Intervenant;
 
+import java.util.*;
 import java.io.*;
+import java.rmi.*;
+import java.rmi.server.*;
 /**
- * classe repr�sentant l'objet servant du forum 
+ * classe représentant une decription du client 
  */
-public  class IntervenantDescriptor implements Serializable{
+public  class IntervenantDescriptor implements Serializable {
 	/**
 	* le prenom de l'intervenant
 	*/
@@ -13,9 +17,51 @@ public  class IntervenantDescriptor implements Serializable{
 	*/
 	public String nom;
 	/**
-	* l'objet repr�sentant l'intervenant
+	 * @return the prenom
+	 */
+	public String getPrenom() {
+		return prenom;
+	}
+
+	/**
+	 * @param prenom the prenom to set
+	 */
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	/**
+	 * @return the nom
+	 */
+	public String getNom() {
+		return nom;
+	}
+
+	/**
+	 * @param nom the nom to set
+	 */
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	/**
+	* l'objet reprï¿½sentant l'intervenant
 	*/
 	public Intervenant intervenant;
+	/**
+	 * @return the intervenant
+	 */
+	public Intervenant getIntervenant() {
+		return intervenant;
+	}
+
+	/**
+	 * @param intervenant the intervenant to set
+	 */
+	public void setIntervenant(Intervenant intervenant) {
+		this.intervenant = intervenant;
+	}
+
 	/**
 	* constructeur d'un descripteur d'intervenant
 	* <dt><b> Requires: </b><code>
@@ -32,7 +78,7 @@ public  class IntervenantDescriptor implements Serializable{
 	}
 	
 	/**
- 	* test l'�galit� entre deux intervenants. deux intervenant sont �gaux 
+ 	* test l'ï¿½galitï¿½ entre deux intervenants. deux intervenant sont ï¿½gaux 
  	* si leur nom et prenom sont identiques.
  	*/
 	public boolean equals(java.lang.Object anObject){
@@ -42,11 +88,6 @@ public  class IntervenantDescriptor implements Serializable{
 		}
 		return false;
 	}
-        
-        @Override
-        public String toString(){
-            return this.nom + " " + this.prenom; 
-        }
  
 }
 
