@@ -1,240 +1,300 @@
-
+import java.awt.*;
+import java.awt.event.*;
+import java.io.Serializable;
 import java.lang.*;
+import java.math.BigDecimal;
 import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
+
+
+
 
 /**
- * Cette classe dï¿½fini le traitant de communication du programme client. Elle
- * est utilisï¿½e par les classes
- * connectListener,writeListener,whoListener,leaveListener du GUI pour effectuer
- * les communications distante avec le forum.
+ * Cette classe définit le traitant de communication du programme client.
+ * Elle est utilisée par les classes connectListener,writeListener,whoListener,leaveListener 
+ * du GUI pour effectuer les communications distante avec le forum.
+*/
+
+public class IntervenantImpl  implements Intervenant, Serializable {
+  private static String server_host = "localhost";
+  private static IrcGui gui;
+  private HashMap client_forum;
+  private LinkedList list_client;
+  private Registry registry;
+  private Intervenant stub;
+  
+  /**
+  * Référence distante vers un forum.
+  */
+  private static Forum forum=null; //ref vers forum   
+  
+
+
+/**
+ * Identification du client dans le forum. Cet identifiant est retournï¿? 
+ * lors de l'appel ï¿? la mï¿?thode enter sur le forum distant.
  */
-public class IntervenantImpl extends UnicastRemoteObject implements Intervenant {
+  private int id=0;
+  
+  public int getId() {
+	return id;
+}
 
-    private static IrcGui gui;
 
-    /**
-     * Rï¿½fï¿½rence distante vers un forum.
-     */
-    private static Forum forum = null; //ref vers forum   
 
-    /**
-     * Identification du client dans le forum. Cet identifiant est retournï¿½ lors
-     * de l'appel ï¿½ la mï¿½thode enter sur le forum distant.
-     */
-    private int id;
+public void setId(int id) {
+	this.id = id;
+}
 
-    /**
-     * nom de l'intervenant
-     */
-    private String nom;
-    /**
-     * prenom de l'intervenant
-     */
-    private String prenom;
+/**
+ * nom de l'intervenant
+ */
+  private String nom;
+  /**
+ * @return the nom
+ */
+public String getNom() {
+	return nom;
+}
+
+
+
+/**
+ * @param nom the name to set
+ */
+public void setNom(String nom) {
+	this.nom = nom;
+}
+
+
+
+/**
+ * @return the prenom
+ */
+public String getPrenom() {
+	return prenom;
+}
+
+
+
+/**
+ * @param prenom the prenom to set
+ */
+public void setPrenom(String prenom) {
+	this.prenom = prenom;
+}
+
+/**
+ * prenom de l'intervenant
+ */
+  private String prenom;
+private String forumName;
+  
+  /**
+ * constructeur de la classe IntervenantImpl. Le nom et le prenom de l'intervenant sont passés
+ * en parametre du programme client (irc.java)
+ * @param nom nom de l'intervenant
+ * @param prenom prenom de l'intervenant
+ */
+  public  IntervenantImpl (String nom, String prenom) throws RemoteException {
+  	super();
+  	 registry = LocateRegistry.getRegistry(server_host);
+   stub = (Intervenant) UnicastRemoteObject.exportObject(this, 0);
     
-    /**
-     * Intervenant descriptor
-     * Cet methode a la reference vers this intervenant
-     */
-    private IntervenantDescriptor descriptor;
+  	registry.rebind(nom+"."+prenom, stub);
+  	System.out.println(nom+"."+prenom+ " bound");
+  	
+  	this.nom = nom;
+  	this.prenom = prenom;
+  	
+  }
+  
+ 
     
-    /**
-     * Ref vers les autres intervenants dans le forum
-     */
-    private HashMap intervenants; 
+  /**
+ * Fixe une reference directe vers le gui (IrcGui). Cette reference est utilisé 
+ * par le traitant de communication pour imprimer des message de chat dans le gui 
+ * via la methode print definie dans IrcGui.
+ * @param gui le GUI
+ */
+  public void setGUI(IrcGui gui){
+  	IntervenantImpl.gui = gui;
+  }
+  
+
+
+
+
+
+/**
+ * Execute la methode enter sur le forum. Cette methode est appelée par le traitant 
+ * writeListener défini dans IrcGui. Cette mï¿?thode doit utiliser un serveur de nom 
+ * pour obtenir une rï¿?fï¿?rence distante vers le forum et exï¿?cuter la mï¿?thode enter 
+ * dessus.
+ * @param forum_name nom du forum 
+ */
+  public void enter (String forum_name) throws Exception {
+	  int i=0;
+  	
+	  
+	  try{
+			
+      forumName=forum_name;
+      registry.rebind(nom+"."+prenom, stub);
+      IntervenantImpl.forum=  (Forum) registry.lookup(forum_name);
+      client_forum=IntervenantImpl.forum.enter(this,this.prenom, this.nom);
+      IntervenantImpl.gui.PrintStatus("connecte  a: "+forum_name);
+      Thread thread = new Thread(veille_forum);  
+      thread.start();                           // lancement du thread qui effectue la veille sur le forum
+	  }
+	  catch(Exception e){
+		  
+		  IntervenantImpl.gui.Print("le forum n'existe pas");
+		  e.printStackTrace();
+	  }
     
-    /**
-     * Counter for the local ids
-     */
-    private int id_key = 0; 
+  
+  }
+	
+  
 
-    /**
-     * id de l'intervenant lors de son inscription Ã  un forum constructeur de la
-     * classe IntervenantImpl. Le nom et le prenom de l'intervenant sont passï¿½s
-     * en parametre du programme client (irc.java)
-     *
-     * @param nom nom de l'intervenant
-     * @param prenom prenom de l'intervenant
-     */
-    public IntervenantImpl(String nom, String prenom) throws RemoteException, Exception {
-        super();
-        this.nom = nom;
-        this.prenom = prenom;
-        this.intervenants = new HashMap();
-        
-//        //Ref vers localhost // TODO:Review, maybe the reference need o be created in the forum
-//        InetAddress ip = InetAddress.getLocalHost();
-//        try {
-//            Intervenant local_ref = (Intervenant) Naming.lookup("//" + ip.getHostAddress() + ":"
-//                    + PORT + "/" + CLIENT_NAME);
-//            //Descriptor prope
-//            this.descriptor = new IntervenantDescriptor(local_ref, this.prenom, this.nom); 
-//        } catch (Exception e) {
-//            System.err.println("Local reference creation exception:");
-//            e.printStackTrace();
-//        }     
-    }
 
-    /**
-     * Fixe une reference directe vers le gui (IrcGui). Cette reference est
-     * utilisï¿½e par le traitant de communication pour imprimer des message de
-     * chat dans le gui via la methode print definie dans IrcGui.
-     *
-     * @param gui le GUI
-     */
-    public void setGUI(IrcGui gui) {
-        this.gui = gui;
-    }
 
-    /**
-     * Execute la methode enter sur le forum. Cette methode est appelï¿½ par le
-     * traitant writeListener dï¿½fini dans IrcGui. Cette mï¿½thode doit utiliser un
-     * serveur de nom pour obtenir une rï¿½fï¿½rence distante vers le forum et
-     * exï¿½cuter la mï¿½thode enter dessus.
-     *
-     * @param forum_name nom du forum
-     * @throws java.lang.Exception
-     */
-    public void enter(String forum_name) throws Exception {
-        
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
-        
-        //Ref vers le Forum
-        try {
-            IntervenantImpl.forum = (Forum) Naming.lookup("//" + FORUM_SERVER_IP
-                    + ":" + FORUM_SERVER_PORT + "/" + forum_name);
-        } catch (Exception e) {
-            System.err.println("Connection to server exception: ");
-            throw new Exception("Connection to forum " + forum_name + " denied");
-        }
-        
-        //Intervenants initialization, forum registration
-        //TODO: Test
-        this.descriptor = new IntervenantDescriptor(this, prenom, nom);
-        try{
-            this.intervenants = forum.enter(this.descriptor.intervenant, prenom, nom);
-        }catch( Exception e){
-            e.printStackTrace(System.out);
-        }
-        
-        //Id init
-        Iterator it = intervenants.entrySet().iterator();
-        id_key = 0;
-        while (it.hasNext()){
-            Map.Entry intervenantEntry = (Map.Entry)it.next();
-            
-            int key = (int)intervenantEntry.getKey();
-            if (key > id_key){id_key = key;}
-            
-            IntervenantDescriptor client = 
-                    (IntervenantDescriptor) intervenantEntry.getValue();
-            if (this.descriptor.equals(client)){
-                this.id = (int)intervenantEntry.getKey();
-                System.out.println("Intervenant ID: "+ this.id);
-            }
-        }
-        
-        //Intervenants list refresh, tous les autres sauf moi
-        this.intervenants.remove(this.id);
-    }
 
-    /**
-     * Execute la methode say sur le forum. Cette methode est appelï¿½ par le
-     * traitant writeListener dï¿½fini dans IrcGui. Cette mï¿½thode doit utilise une
-     * rï¿½fï¿½rence distante vers le forum et exï¿½cuter la mï¿½thode say dessus.
-     *
-     * @param msg message ï¿½ envoyer aux intervenants enregistrer dans le forum.
-     */
-    public void say(String msg) throws Exception {
-        if (this.id < 0){
-            throw new Exception("You are not registred in a forum");
-        }else{
-            System.out.println("Sending new message...");
-            String f_msg = this.nom.concat(" " + this.prenom + ":" + msg);
-            try{
-                forum.say(f_msg);
-            }catch(Exception e){
-                System.out.println("No forum connection");
-                throw new Exception("No forum connection");
-                //System.out.println("Sending message direct to users");
-                //TODO: Send message to every user.
-            } 
-        }
-    }
+/**
+ * Execute la methode say sur le forum. Cette methode est appelï¿? par le traitant 
+ * writeListener dï¿?fini dans IrcGui. Cette mï¿?thode doit utilise une rï¿?fï¿?rence distante 
+ * vers le forum et exï¿?cuter la mï¿?thode say dessus.
+ * @param msg message ï¿? envoyer aux intervenants enregistrer dans le forum. 
+ */
+  public void say (String msg) throws Exception {
+  	  
+	  if (System.getSecurityManager() == null) {
+			
+	}
+	  String name= this.nom+"."+this.prenom;
+	  Set set = client_forum.keySet();
+		
+		Iterator i = set.iterator();
+		
+		while (i.hasNext()) {
+			IntervenantDescriptor intervenant = (IntervenantDescriptor) i.next();
+			
+			Intervenant inter=  intervenant.getIntervenant();
+				inter.listen(name+":"+msg);
+			
+		}
+		
+  	
+	
+  }
+  
+  /**
+ * Cette methode est appelee par le forum pour imprimer un nouveau message de 
+ * chat a l'intervenant. Cette impression est dï¿?lï¿?guï¿?e ï¿? la mï¿?thode print dï¿?finie 
+ * dans IrcGui. 
+ * @param msg nouveau message ï¿? imprimer dans le gui.
+ */
+  public void listen (String msg) throws RemoteException // throws PreconditionException 
+  {
+	  if (System.getSecurityManager() == null) {
+		
+		}
+ 
+	 IntervenantImpl.gui.Print(msg);
+	  
+	  
+  } 
+  
+/**
+ * cette méthode ajoute 
+ */
 
-    /**
-     * Cette methode est appelï¿½ par le forum pour imprimer un nouveau message de
-     * chat a l'intervenant. Cette impression est dï¿½lï¿½guï¿½e ï¿½ la mï¿½thode print
-     * dï¿½finie dans IrcGui.
-     *
-     * @param msg nouveau message ï¿½ imprimer dans le gui.
-     */
-    public void listen(String msg) throws RemoteException {
-        System.out.println("Listen new msg...");
-        if (this.id < 0) {
-            System.out.println("...rejected message, no active forum");
-        } else {
-            IntervenantImpl.gui.Print(msg);
-        }
-    }
+  public void  addNewClient(IntervenantDescriptor i) throws RemoteException{
+  
+	  client_forum.put(i, this.id);
+	  id=id+1;
+  } 
+ 
+  public void delNewClient(IntervenantDescriptor i) throws RemoteException{
+  	  IntervenantDescriptor interv_supp = null;
+		 Set set = this.client_forum.keySet();
+			// Get an iterator
+			Iterator j = set.iterator();
+			// Display elements
+			while (j.hasNext()) {
+				
+				IntervenantDescriptor intervenant = (IntervenantDescriptor)  j.next();
+				
+				if((intervenant.equals(i))){
+					interv_supp=intervenant;
+				}
+						
+			}
+	this.client_forum.remove(interv_supp);
+	IntervenantImpl.gui.Print("le client : "+interv_supp.getNom()+"."+interv_supp.getPrenom()+"\t a quitté le forum ");
+  } 
 
-    public void addNewClient(IntervenantDescriptor i) throws RemoteException {
-        this.intervenants.put(id_key++, i);
-        System.out.println("Adding new client with id: "+ id_key);
-    }
+  /**
+ * Execute la methode leave sur le forum. Cette methode est appelï¿? par le traitant 
+ * leaveListener dï¿?fini dans IrcGui. Cette mï¿?thode doit utilise une rï¿?fï¿?rence distante 
+ * vers le forum et exï¿?cuter la mï¿?thode leave dessus.
+ */
+  public void leave() throws Exception {
+	
+	  IntervenantDescriptor interdes = new IntervenantDescriptor(this,
+				this.prenom, this.nom);
+	 ;
+	
+	
+	  registry.unbind(nom+"."+prenom);
+	  IntervenantImpl.forum.leave(interdes);
+	  IntervenantImpl.forum= null;
+	  IntervenantImpl.gui.PrintStatus("Déconnecté");
+	  forumName=null;
+	  
+  }
+  
+  /**
+ * Execute la methode who sur le forum. Cette methode est appelï¿? par le traitant 
+ * whoListener dï¿?fini dans IrcGui. Cette mï¿?thode doit utilise une rï¿?fï¿?rence distante 
+ * vers le forum et exï¿?cuter la methode who dessus.
+ */
+  public String who() throws Exception {
+	return  IntervenantImpl.forum.who(); 
+  }
+/** 
+ * ce Runnable rprésente la veille du client sur le forum, en effet le client vérifie périodiquement
+ * si la réference distante du forum auquel il est connecte est  toujours la même  sur le registry, dans le cas d'un changement de réference 
+ *  il obtient la nouvelle.
+ */
+ Runnable  veille_forum= new Runnable(){
 
-    public void delNewClient(IntervenantDescriptor i) throws RemoteException {
-        Iterator it = intervenants.entrySet().iterator();
-        int del_id = 0;
-        while (it.hasNext()){
-            Map.Entry intervenantEntry = (Map.Entry)it.next();
-            IntervenantDescriptor client = 
-                    (IntervenantDescriptor) intervenantEntry.getValue();
-            if (i.equals(client)){
-                del_id = (int)intervenantEntry.getKey();
-                break;
-            }
-        }
-        Object remove = intervenants.remove(del_id);
-        System.out.println("Delete client with id: "+ id_key + " " + i.toString());
-    }
-
-    /**
-     * Execute la methode leave sur le forum. Cette methode est appelï¿½ par le
-     * traitant leaveListener dï¿½fini dans IrcGui. Cette mï¿½thode doit utilise une
-     * rï¿½fï¿½rence distante vers le forum et exï¿½cuter la mï¿½thode leave dessus.
-     */
-    public void leave() throws Exception {
-        try{
-            this.forum.leave(this.id);
-        }catch (Exception e){
-            System.err.println("No conecction to Forum.");
-            this.gui.Print("No connection to forum.");
-            //TODO:Delete command to every client
-            //TODO:Maybe return Exception
-        }
-        this.id = -1;  // Sera bien de dire -1 car dans les forums on a ids toujour positif
-        this.intervenants.clear(); // No reference to other ones in the forum 
-        System.out.println("Exit of forum..");
-    }
-
-    /**
-     * Execute la methode who sur le forum. Cette methode est appelï¿½ par le
-     * traitant whoListener dï¿½fini dans IrcGui. Cette mï¿½thode doit utilise une
-     * rï¿½fï¿½rence distante vers le forum et exï¿½cuter la methode who dessus.
-     */
-    public String who() throws Exception {
-        try{
-            return IntervenantImpl.forum.who();
-        }catch(Exception e){
-            System.err.println("No conecction to Forum.");
-            throw new Exception("No connection to Forum");            
-        }
-    }
+	
+	public void run() {
+		// TODO Auto-generated method stub
+		while(true){
+			
+			 try {
+				if(forumName!=null){
+				IntervenantImpl.forum=  (Forum) registry.lookup(forumName);}
+			} catch (RemoteException | NotBoundException e) {
+				e.printStackTrace();
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} 
+		}
+	}
+	  
+  };
 }

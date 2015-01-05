@@ -1,43 +1,57 @@
-// HelloServer.java
-// Copyright and License 
-
+import java.util.*;
+import java.io.*;
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.*;
+ 
+
 
 
 /**
- * Cette classe est la classe principale constituant le programme serveur de forum. 
- * Cette classe représente le serveur du forum. Elle initialise l'orb 
- * et l'objet servant du forum (ForumImpl).
+ * Cette classe représente le serveur principal qui tourne le serveur des forums ou  la "fabrique de forums" 
+ * Le serveur principal supporte la gestion des pannes à deux niveaux :  niveau des objets forums et niveau du
+ * serveur de forums.
  */
- 
+
 
 public class ForumServer {
 
-    
-    public static void main(String args[]) {
+	private HashMap forums = new HashMap();
+		
+	public static void main(String args[]) {
 
-        int status = 0; 
+		
+		
+		String name = "admin_forum";
+		
+		try {
+			
+			Registry registry = LocateRegistry.getRegistry(1099);
+			ForumAdminImpl forumAdminImpl = new ForumAdminImpl("principal");
+			forumAdminImpl.veille_forum(true);               //activation
+			forumAdminImpl.setVeille_serveur_bool(true);    //de la gestion de pannes
+			Remote stub =(Remote) (ForumAdmin) UnicastRemoteObject.exportObject((Remote) forumAdminImpl, 1098);
+			registry.rebind(name, stub);
+			System.out.println(name+ " bound");
+                        System.out.println( " salut hha");
+			
+		 }
+		    catch (Exception ex) {
+			System.err.println("ForumServer exception:");
+			ex.printStackTrace();
+			
+		}
 
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
-        
-        try {
-            ForumImpl forum = new ForumImpl();
-            final Registry reg = LocateRegistry.createRegistry(Forum.FORUM_SERVER_PORT);
-            LocateRegistry.getRegistry(Forum.FORUM_SERVER_PORT).rebind(Forum.FORUM_SERVER_NAME,forum);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            status = 1;
-        }
-        
-        if (status == 0){
-            System.out.println("Server is ready...");
-        }else{
-            System.exit(status);
-        }
+	}
 
-    }
+	public HashMap getForums() {
+		return forums;
+	}
+
+
+	public void setForums(HashMap forums) {
+		this.forums = forums;
+	}
 
 }
