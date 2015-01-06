@@ -16,12 +16,10 @@ import java.rmi.registry.Registry;
  * comme ça on est sûr que le registry reste activé
  */
 public class Registry_creation {
-
 	public static void main(String args[]) throws RemoteException {
 		Registry registry = LocateRegistry.createRegistry(1099);
 		while(true){
 			
 		}
-	}
-	
+	}	
 }
