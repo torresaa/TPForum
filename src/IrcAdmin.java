@@ -27,7 +27,7 @@ public class IrcAdmin {
 
 	try{
 		Forum_Gui gui= new Forum_Gui();
-		AdminImpl admin = new AdminImpl("ALSAFWI", "Wassim");
+		AdminImpl admin = new AdminImpl("rmi", "rmi");
 		admin.setGUI(gui);
 		gui.setHandler(admin);
 		
