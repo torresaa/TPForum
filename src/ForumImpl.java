@@ -110,7 +110,7 @@ public class ForumImpl implements Forum,Serializable {
 		if (this.intervenants.isEmpty()) {
 			this.intervenants.put(interdes,this.id );
 			this.id += 1;
-			interdes.getIntervenant().listen("vous vous êtes connecté au forum");
+			interdes.getIntervenant().listen("vous  êtes connecté au forum");
 			 
 		} else {
 			boolean exist = false;
@@ -133,7 +133,7 @@ public class ForumImpl implements Forum,Serializable {
 				
 				this.intervenants.put(interdes,this.id);
 				this.id += 1;
-				interdes.getIntervenant().listen("vous vous êtes connécté au forum");
+				interdes.getIntervenant().listen("vous êtes connécté au forum");
 				
 			}
 			

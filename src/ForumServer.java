@@ -1,7 +1,9 @@
 
+import java.rmi.Remote;
 import java.util.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Cette classe représente le serveur principal qui tourne le serveur des forums
@@ -22,12 +24,14 @@ public class ForumServer {
 //        }
 
         try {
-            
+            Registry registry = LocateRegistry.getRegistry(1099);
             ForumAdminImpl forumAdminImpl = new ForumAdminImpl("principal");
-            final Registry registry = LocateRegistry.createRegistry(1099);
-            LocateRegistry.getRegistry(1099).rebind(name, forumAdminImpl);
-            forumAdminImpl.veille_forum(true); //TODO: Review               //activation
-            forumAdminImpl.setVeille_serveur_bool(true);// TODO: Review    //de la gestion de pannes
+           //final Registry registry = LocateRegistry.createRegistry(1099);
+            //LocateRegistry.getRegistry(1099).rebind(name, forumAdminImpl);
+            Remote stub =(Remote) (ForumAdmin) UnicastRemoteObject.exportObject((Remote) forumAdminImpl, 1098);
+			registry.rebind(name, stub);
+            forumAdminImpl.veille_forum(true);              //activation
+            forumAdminImpl.setVeille_serveur_bool(true);  //de la gestion de pannes
             System.out.println(name + " bound");
             System.out.println(" salut hha");
 
